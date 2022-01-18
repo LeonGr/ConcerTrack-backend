@@ -1,33 +1,35 @@
-use application::tracked;
-
 #[macro_use]
 extern crate rocket;
 extern crate dotenv;
 #[macro_use]
 extern crate diesel;
 
+// declare modules
 mod application;
 mod data_access;
 
+use application::tracked;
+
+use rocket::serde::json::Json;
+
 #[get("/")]
 fn index() -> &'static str {
-    tracked::get_tracked(String::new());
     "Hello, world!"
 }
 
-#[get("/tracked/<id>")]
-fn get_tracked(id: String) -> String {
-    id
+#[get("/tracked/<code>")]
+fn get_tracked(code: String) -> Json<Vec<String>> {
+    Json(tracked::get_tracked(code))
 }
 
-#[post("/tracked/<id>", data = "<artist>")]
-fn add_tracked(id: String, artist: String) -> String {
-    id + " += " + &artist
+#[post("/tracked/<code>", data = "<artist>")]
+fn add_tracked(code: String, artist: String) {
+    tracked::add_tracked(code, artist)
 }
 
-#[delete("/tracked/<id>", data = "<artist>")]
-fn remove_tracked(id: String, artist: String) -> String {
-    id + " -= " + &artist
+#[delete("/tracked/<code>", data = "<artist>")]
+fn remove_tracked(code: String, artist: String) {
+    tracked::delete_tracked(code, artist)
 }
 
 
