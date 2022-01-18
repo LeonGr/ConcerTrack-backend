@@ -19,11 +19,20 @@ pub fn get_tracked(track_code: String) -> Vec<String> {
         .collect()
 }
 
-// TODO: prevent duplicate entries
 pub fn add_tracked(track_code: String, artist_name: String) {
     use crate::data_access::schema::tracked;
+    use crate::data_access::schema::tracked::dsl::*;
 
     let connection = database::establish_connection();
+
+    let existing = tracked
+        .filter(code.eq(track_code.clone()).and(artist.eq(artist_name.clone())))
+        .load::<TrackEntry>(&connection)
+        .expect("Error loading tracked artist entries");
+
+    if existing.len() > 0 {
+        return
+    }
 
     let new_entry = NewEntry {
         code: track_code,
