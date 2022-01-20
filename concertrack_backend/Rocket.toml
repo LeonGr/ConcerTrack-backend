@@ -1,0 +1,8 @@
+## defaults for _all_ profiles
+[default]
+address = "0.0.0.0"
+limits = { json = "10 KiB" }
+
+[release.tls]
+certs = "/etc/letsencrypt/live/io.lhax.xyz/fullchain.pem"
+key = "/etc/letsencrypt/live/io.lhax.xyz/privkey.pem"
