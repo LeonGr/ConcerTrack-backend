@@ -38,7 +38,7 @@ fn remove_tracked(code: String, artist: String) {
 fn rocket() -> _ {
     let cors = rocket_cors::CorsOptions {
         allowed_origins: AllowedOrigins::some_exact(&["https://concertrack.com", "http://localhost:8080"]),
-        allowed_methods: vec![Method::Get, Method::Post].into_iter().map(From::from).collect(),
+        allowed_methods: vec![Method::Get, Method::Post, Method::Delete].into_iter().map(From::from).collect(),
         allowed_headers: AllowedHeaders::some(&["Accept", "Content-Type"]),
         ..Default::default()
     }
