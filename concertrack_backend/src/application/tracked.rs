@@ -11,7 +11,7 @@ pub fn get_tracked(track_code: String) -> Vec<String> {
         .load::<TrackEntry>(&connection)
         .expect("Error loading tracked artist entries");
 
-    println!("Retrieved results for code {}: {:?}", track_code, results);
+    println!("Retrieved results for code {}: {:?}", track_code, results.len());
 
     results
         .iter()
@@ -35,8 +35,8 @@ pub fn add_tracked(track_code: String, artist_name: String) {
     }
 
     let new_entry = NewEntry {
-        code: track_code,
-        artist: artist_name,
+        code: track_code.clone(),
+        artist: artist_name.clone(),
     };
 
     let affected =
@@ -44,6 +44,8 @@ pub fn add_tracked(track_code: String, artist_name: String) {
             .values(&new_entry)
             .execute(&connection)
             .expect("Error adding new tracked artist entry");
+
+    println!("Added {affected} artist ({artist_name}) for code {track_code}");
 
     assert_eq!(1, affected)
 }
@@ -55,9 +57,11 @@ pub fn delete_tracked(track_code: String, artist_name: String) {
     let connection = database::establish_connection();
 
     let affected =
-        diesel::delete(tracked.filter(code.eq(track_code).and(artist.eq(artist_name))))
+        diesel::delete(tracked.filter(code.eq(track_code.clone()).and(artist.eq(artist_name.clone()))))
             .execute(&connection)
             .expect("Error adding new tracked artist entry");
+
+    println!("Removed {affected} artist ({artist_name}) for code {track_code}");
 
     assert!(affected < 2)
 }
