@@ -10,7 +10,7 @@ mod data_access;
 
 use application::tracked;
 
-use rocket::{serde::json::Json, http::Method};
+use rocket::{serde::json::Json, http::Method, shield::{Shield, Hsts}};
 use rocket_cors::{AllowedOrigins, AllowedHeaders};
 
 #[get("/")]
@@ -45,9 +45,13 @@ fn rocket() -> _ {
     .to_cors()
     .expect("Could not create CORS options");
 
+    let shield = Shield::default()
+        .enable(Hsts::default());
+
     rocket::build()
         .mount("/", routes![index, get_tracked, add_tracked, remove_tracked])
         .mount("/", rocket_cors::catch_all_options_routes())
         .attach(cors.clone())
+        .attach(shield)
         .manage(cors)
 }
