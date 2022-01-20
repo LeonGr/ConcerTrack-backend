@@ -10,7 +10,8 @@ mod data_access;
 
 use application::tracked;
 
-use rocket::serde::json::Json;
+use rocket::{serde::json::Json, http::Method};
+use rocket_cors::{AllowedOrigins, AllowedHeaders};
 
 #[get("/")]
 fn index() -> &'static str {
@@ -35,5 +36,18 @@ fn remove_tracked(code: String, artist: String) {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index, get_tracked, add_tracked, remove_tracked])
+    let cors = rocket_cors::CorsOptions {
+        allowed_origins: AllowedOrigins::some_exact(&["https://concertrack.com", "http://localhost:8080"]),
+        allowed_methods: vec![Method::Get, Method::Post].into_iter().map(From::from).collect(),
+        allowed_headers: AllowedHeaders::some(&["Accept", "Content-Type"]),
+        ..Default::default()
+    }
+    .to_cors()
+    .expect("Could not create CORS options");
+
+    rocket::build()
+        .mount("/", routes![index, get_tracked, add_tracked, remove_tracked])
+        .mount("/", rocket_cors::catch_all_options_routes())
+        .attach(cors.clone())
+        .manage(cors)
 }

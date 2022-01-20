@@ -7,7 +7,6 @@ pub struct TrackEntry {
     pub artist: String,
 }
 
-
 #[derive(Insertable)]
 #[table_name="tracked"]
 pub struct NewEntry {
